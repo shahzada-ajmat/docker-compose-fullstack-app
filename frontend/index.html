@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Student Directory</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h2>Student Directory</h2>
+  <input id="name" placeholder="Name" />
+  <input id="city" placeholder="City" />
+  <button onclick="sendData()">Submit</button>
+
+  <h3>Registered Students:</h3>
+  <ul id="studentList"></ul>
+
+
+
+  <script>
+    function renderList(students) {
+      const list = document.getElementById('studentList');
+      list.innerHTML = '';
+      students.forEach((s, idx) => {
+        const li = document.createElement('li');
+        li.innerText = `${idx + 1}. ${s.name} from ${s.city}`;
+        list.appendChild(li);
+      });
+    }
+
+    async function loadStudents() {
+      try {
+        const res = await fetch('http://localhost:5000/api/students');
+        const data = await res.json();
+        renderList(data);
+      } catch (err) {
+        console.error('Failed to load students:', err);
+      }
+    }
+
+    async function sendData() {
+      const nameInput = document.getElementById('name');
+      const cityInput = document.getElementById('city');
+
+      const name = nameInput.value.trim();
+      const city = cityInput.value.trim();
+
+      if (!name || !city) return;
+
+      try {
+        const res = await fetch('http://localhost:5000/api/student', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, city })
+        });
+        const updatedList = await res.json();
+        renderList(updatedList);
+
+        nameInput.value = '';
+        cityInput.value = '';
+      } catch (err) {
+        console.error('Failed to submit student:', err);
+      }
+    }
+
+    // Load existing database records when the page opens
+    loadStudents();
+  </script>
+
+  
+</body>
+</html>

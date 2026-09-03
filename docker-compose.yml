@@ -1,0 +1,39 @@
+services:
+  # 1. Database Container
+  dbxy:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgresx
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: studentdb
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgresx -d studentdb"]
+      interval: 2s
+      timeout: 5s
+      retries: 5
+
+  # 2. Backend Container
+  backendx:
+    build: ./backend
+    ports:
+      - "5000:5000"
+    depends_on:
+      dbxy:
+        condition: service_healthy
+
+  # 3. Frontend Container
+  frontendx:
+    build: ./frontend
+    ports:
+      - "3000:80"
+
+  # 4. Web-based Database Viewer 🐘🔍
+  pgwebxy:
+    image: sosedoff/pgweb
+    ports:
+      - "8081:8081"
+    environment:
+      - DATABASE_URL=postgres://postgresx:mypassword@dbxy:5432/studentdb?sslmode=disable
+    depends_on:
+      dbxy:
+        condition: service_healthy
