@@ -1,5 +1,4 @@
 services:
-  # 1. Database Container
   dbxy:
     image: postgres:16-alpine
     environment:
@@ -12,28 +11,25 @@ services:
       timeout: 5s
       retries: 5
 
-  # 2. Backend Container
   backendx:
-    build: ./backend
+    image: ajmat0001/student-app-backend:latest
     ports:
       - "5000:5000"
     depends_on:
       dbxy:
         condition: service_healthy
 
-  # 3. Frontend Container
   frontendx:
-    build: ./frontend
+    image: ajmat0001/student-app-frontend:latest
     ports:
       - "3000:80"
 
-  # 4. Web-based Database Viewer 🐘🔍
   pgwebxy:
     image: sosedoff/pgweb
     ports:
       - "8081:8081"
     environment:
-      - DATABASE_URL=postgres://postgresx:mypassword@dbxy:5432/studentdb?sslmode=disable
+      - PGWEB_DATABASE_URL=postgres://postgresx:mypassword@dbxy:5432/studentdb?sslmode=disable
     depends_on:
       dbxy:
         condition: service_healthy
