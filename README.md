@@ -11,7 +11,7 @@ A simple full-stack app with a frontend, backend, database, and visual database 
    docker compose up -d
 
 
-   ## Service URLs 🌐
+## Service URLs 🌐
 
 * **Frontend Web App:** http://localhost:3000
 * **Backend API (Students):** http://localhost:5000/api/students
